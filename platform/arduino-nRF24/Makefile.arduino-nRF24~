@@ -1,0 +1,132 @@
+CONTIKI_TARGET_DIRS	= . arduino arduino/variants/standard dev
+CONTIKI_CORE		= contiki-arduino-main
+CONTIKI_TARGET_MAIN	= ${CONTIKI_CORE}.o
+
+CONTIKI_TARGET_SOURCEFILES +=	rs232.c cfs-eeprom.c eeprom.c random.c \
+				mmem.c contiki-arduino-main.c slip.c\
+				wiring_digital.c spi.c \
+				leds-arch.c nRF24_driver.c
+
+CONTIKIAVR	= $(CONTIKI)/cpu/avr
+CONTIKIBOARD	= .
+
+ifndef USART_BAUD
+USART_BAUD	= 9600
+endif
+
+# http://arduino.cc/en/Main/Boards
+
+ifeq ($(ARDUINO_MODEL), Diecimila) # ATmega168 @ 16MHz
+# http://www.arduino.cc/en/Main/ArduinoBoardDiecimila
+AVR_MCU_CLOCK	= 16
+AVR_MCU_SPEED	= 16000000UL
+MCU		= atmega168
+USART_PORT	= 0
+
+else ifeq ($(ARDUINO_MODEL), ProMini8MHz) # ATmega168 @ 8MHz (3.3V)
+# http://www.arduino.cc/en/Main/ArduinoBoardProMini
+AVR_MCU_CLOCK	= 8
+AVR_MCU_SPEED	= 8000000UL
+MCU		= atmega168
+USART_PORT	= 0
+
+else ifeq ($(ARDUINO_MODEL), ProMini16MHz) # ATmega168 @ 16MHz (5V)
+# http://www.arduino.cc/en/Main/ArduinoBoardProMini
+AVR_MCU_CLOCK	= 16
+AVR_MCU_SPEED	= 16000000UL
+MCU		= atmega168
+USART_PORT	= 0
+
+else ifeq ($(ARDUINO_MODEL), Duemilanove-328) # ATmega328p @ 16MHz (5V)
+# http://arduino.cc/en/Main/ArduinoBoardDuemilanove
+AVR_MCU_CLOCK	= 16
+AVR_MCU_SPEED	= 16000000UL
+MCU		= atmega328p
+USART_PORT	= 0
+AVRDUDE_BAUD = 57600
+AVRDUDE_PORT		= /dev/ttyUSB0
+
+else ifeq ($(ARDUINO_MODEL), Uno) # ATmega328p @ 16MHz (5V)
+# http://arduino.cc/en/Main/ArduinoBoardUno
+AVR_MCU_CLOCK	= 16
+AVR_MCU_SPEED	= 16000000UL
+MCU		= atmega328p 
+USART_PORT	= 0
+AVRDUDE_BAUD = 57600
+AVRDUDE_PORT		= /dev/ttyUSB0
+
+else ifeq ($(ARDUINO_MODEL), UnoIntern8M) # ATmega328p @ 8MHz (2.7V) - no crystal
+# http://arduino.cc/en/Main/ArduinoBoardUno
+AVR_MCU_CLOCK	= 8
+AVR_MCU_SPEED	= 8000000UL
+MCU		= atmega328p 
+USART_PORT	= 0
+AVRDUDE_BAUD = 57600
+AVRDUDE_PORT		= /dev/ttyUSB1
+
+else ifeq ($(ARDUINO_MODEL), UnoIntern4M) # ATmega328p @ 4MHz (1.8V) - no crystal
+# http://arduino.cc/en/Main/ArduinoBoardUno
+AVR_MCU_CLOCK	= 4
+AVR_MCU_SPEED	= 4000000UL
+MCU		= atmega328p 
+USART_PORT	= 0
+AVRDUDE_BAUD = 57600
+AVRDUDE_PORT		= /dev/ttyUSB1
+
+else ifeq ($(ARDUINO_MODEL), UnoIntern1M) # ATmega328p @ 1MHz (1.8V) - no crystal
+# http://arduino.cc/en/Main/ArduinoBoardUno
+AVR_MCU_CLOCK	= 1
+AVR_MCU_SPEED	= 1000000UL
+MCU		= atmega328p 
+USART_PORT	= 0
+AVRDUDE_BAUD = 9600
+AVRDUDE_PORT		= /dev/ttyUSB0
+
+else
+$(error Please define Arduino board model in Makefile.arduino)
+endif
+
+ifndef AVRDUDE_BAUD
+AVRDUDE_BAUD = $(USART_BAUD)
+endif
+
+#AVRDUDE_OPTIONS		= -V -F -b $(USART_BAUD)
+AVRDUDE_OPTIONS		= -v -b $(AVRDUDE_BAUD)
+
+#AVRDUDE_PROGRAMMER	= stk500v1
+#AVRDUDE_PROGRAMMER	= dapa
+AVRDUDE_PROGRAMMER 	= arduino
+
+AVRDUDE_PORT		?= /dev/ttyACM0
+
+CONTIKI_PLAT_DEFS	= -DF_CPU=$(AVR_MCU_SPEED) \
+			  -DMCU_MHZ=$(AVR_MCU_CLOCK) \
+			  -DUSART_BAUD=USART_BAUD_$(USART_BAUD) \
+			  -DUSART_PORT=RS232_PORT_$(USART_PORT)
+
+# For usb devices, you may either use PORT=usb, or (e.g. if you have more than one
+# programmer connected) you can use the following trick to find out the serial number:
+#
+# The example is for an JTAGICE mkII used to program an ATmega128:
+# avrdude -v -P usb:xxxx -c jtag2 -p atmega128
+
+
+# Additional avrdude options
+
+
+include $(CONTIKIAVR)/Makefile.avr
+
+### Source for AT86RF230
+##include $(CONTIKI)/cpu/avr/radio/rf230/Makefile.rf230
+##
+### Source for Atmel/Cisco 802.15.4'ish MAC
+##include $(CONTIKI)/cpu/avr/radio/mac/Makefile.mac
+##
+### Source for IEEE 802.15.4 manager interface
+##include $(CONTIKI)/cpu/avr/radio/ieee-manager/Makefile.ieee-manager
+
+
+
+savearduinotarget: savetarget
+	@echo "saving model to Makefile.target"
+	@echo >>Makefile.target "ARDUINO_MODEL = $(ARDUINO_MODEL)"

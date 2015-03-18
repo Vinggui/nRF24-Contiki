@@ -1,0 +1,2 @@
+TARGET = arduino-nRF24
+ARDUINO_MODEL = UnoIntern4M
