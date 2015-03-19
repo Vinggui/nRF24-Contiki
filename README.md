@@ -4,12 +4,15 @@ This repository is destined to provide a start for operating radios model **nRF2
 
 These files are actually the full plataform for working with Contiki and runing on Atmega328p, either using external crystal 8-16MHz or internal RC clock at 4-8MHz. They were ported to "C" from the last updated repository of [RF24 library](https://github.com/tmrh20/RF24), but haven't still been fully used by me. So I hope this may be of use for someone, and I accept suggestions and fixes, of course.
 
-#How to use it
+How to use it
+==============================
 1. Download the [Arduino IDE](http://arduino.cc/en/Main/Software) inside the VM of contiki;  
 2. Go to the main directory of ubuntu running on VM and create the folder "jenkins/jenkins/jobs/toolchain-avr-3.4.3-linux32/workspace/objdir/etc";  
 3. Copy the **avrdude.conf** file from the downloaded Arduino IDE "arduino/hardware/tools/avr/etc/avrdude.conf" to the jenkins folder created before;
 4. Insert the new arduino-nRF24 plataform folder inside your Contiki-OS folder (E.g. ~contiki-2.7/plataform/);  
-5. Go to some Example (or use the "myFirstMSG-nRF24" example uploaded here).
+5. Go to some Example (or use the "myFirstMSG-nRF24" example uploaded here).  
+
+* Don't forget to check and flash the [Avr FUSE](http://www.engbedded.com/fusecalc/) to the desired cpu clock, or things may not work.
 
 ###How to flash Contiki using bootloader
 First, check if you are using the correct [bootloader](https://github.com/VGH05T/optiboot) for the intended clock, then just go to your example folder, and run:
@@ -26,7 +29,9 @@ Like the bootloader, using USBasp may save you some KBytes of data. So this is a
 To use it, just do the following code (you may need to add path to the system or go inside the folder of Arduino IDE):  
 * To generate a hex file:  
 ```
-$ avr-objcopy hello-world.arduino -j .text -j .data -O ihex hello-world.hex
+$ make TARGET=arduino-nRF24 ARDUINO_MODEL=Uno savetarget savearduinotarget
+$ make myFirstMSG-nRF24
+$ avr-objcopy myFirstMSG-nRF24.arduino-nRF24 -j .text -j .data -O ihex myFirstMSG-nRF24.hex
 ```
 * Connect the board with PC and copy hex file to the board:
 ```
