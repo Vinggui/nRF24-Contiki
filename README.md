@@ -2,7 +2,9 @@ nRF24 driver for Contiki-OS running on 328p
 ==============================
 This repository is destined to provide a start for operating radios model **nRF24L01+** inside [Contiki-OS](http://www.contiki-os.org/index.html).  
 
-These files are actually the full plataform for working with Contiki and runing on Atmega328p, either using external crystal 8-16MHz or internal RC clock at 4-8MHz. They were ported to "C" from the last updated repository of [RF24 library](https://github.com/tmrh20/RF24), but haven't still been fully used by me. So I hope this may be of use for someone, and I accept suggestions and fixes, of course.
+These files are actually the full plataform for working with Contiki and runing on Atmega328p, either using external crystal 8-16MHz or internal RC clock at 4-8MHz. They were ported to "C" from the last updated repository of [RF24 library](https://github.com/tmrh20/RF24), but haven't still been fully used by me. So I hope this may be of use for someone. I accept suggestions and fixes, of course.  
+
+It worth mentioning that the **nRF24 Contiki driver** published here is essencially composed of 3 files (**"nRF24_driver.c"**, **"nRF24_driver.h"** and **"nRF24L01.h"**), inside the folder **~platform/arduino-nRF24/dev**. Porting this driver to other platforms inside Contiki is an easy task and demands only setting defines, makefiles and using a modified SPI driver. All necessary files are uploaded here as well, so you can adapt to your platform too.
 
 How to use it
 ==============================
