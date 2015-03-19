@@ -75,11 +75,17 @@ PROCINIT(&etimer_process, &serial_line_process);
 void
 init_lowlevel(void)
 {
-#if F_CPU == 4000000
-  /* Set internal clock to 4MHz */ 
-  CLKPR = 0b10000000;
-  CLKPR = 0b00000001;
-#endif
+#if defined (__AVR_ATmega328P__)
+  #if F_CPU == 1000000
+    /* Set internal clock to 1MHz */ 
+    CLKPR = 0b10000000;
+    CLKPR = 0b00000011;
+  #elif F_CPU == 4000000
+    /* Set internal clock to 4MHz */ 
+    CLKPR = 0b10000000;
+    CLKPR = 0b00000001;
+  #endif /* F_CPU */
+#endif /* defined (__AVR_ATmega328P__ */
 
   rs232_init(USART_PORT, USART_BAUD,
              USART_PARITY_NONE | USART_STOP_BITS_1 | USART_DATA_BITS_8);
